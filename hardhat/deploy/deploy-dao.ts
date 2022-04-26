@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/dist/types";
 import verify from "../verify-network";
-import { CONTRIBUTION_TIME, QUORUM, VOTE_TIME } from "../helper-deploy";
+import { CONTRIBUTION_TIME, QUORUM, VOTE_TIME } from "../constants";
 
 const deployDAO: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment

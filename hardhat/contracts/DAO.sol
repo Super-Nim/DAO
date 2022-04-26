@@ -11,6 +11,10 @@ pragma solidity ^0.8.0;
     */
 
 contract DAO { 
+
+    event contributed(address _investor);
+    event proposalCreated(uint indexed _timestamp, string _name, uint _amount, address indexed _recipient, uint _votes, uint _endTime, bool _executed);
+
     struct Proposal {
         /// @notice unique id of proposal
         uint id;
@@ -64,6 +68,7 @@ contract DAO {
         shares[msg.sender] += msg.value;
         totalShares += msg.value;
         availableFunds += msg.value;
+        emit contributed(msg.sender);
     }
     /// @notice enable investors to redeem their shares from DAO
     function redeemShare(uint amount) external {
@@ -85,6 +90,8 @@ contract DAO {
         investors[to] = true; // to addr is now an investor of the DAO
     }
     /// @notice investors can create investing proposals for the DAO
+    // TODO: add event emitter - indivudally extract values from mapping
+    // create storage pointer, then pass values to event?? check gas efficiency
     function createProposal(
         string memory name,
         uint amount,
@@ -106,6 +113,7 @@ contract DAO {
         // Therefore, the availableFunds will always be <= this.balance
         availableFunds -= amount;
         nextProposalId++;
+        emit proposalCreated(block.timestamp, name, amount, recipient, 0, block.timestamp + voteTime, false);
     }
     /// @notice vote for a given proposal
     function vote(uint proposalId) external onlyInvestors() {
@@ -117,6 +125,7 @@ contract DAO {
         proposal.votes += shares[msg.sender];
     }
     /// @notice execute the successful proposal
+    // TODO: add event emitter here
     function executeProposal(uint proposalId) external onlyInvestors() {
         Proposal storage proposal = proposals[proposalId];
         require(block.timestamp >= proposal.endTime, "cannot execute proposal before end time");
@@ -127,7 +136,6 @@ contract DAO {
         require(quorumSurpassed >= quorum, "proposal has not satisfied quroum");
         proposal.executed = true;
         _transferEther(proposal.amount, proposal.recipient);
-
     }
 
     /// @notice 'escape hatch' to the extract ether if fuckery occurs

@@ -1,0 +1,19 @@
+
+.cardStyle {
+    height: 100%;
+    display: flex;
+}
+
+.fillSpace {
+    height: 45vh;
+}
+
+.addressStyle {
+    text-overflow: ellipsis;
+    width: 100px;
+    overflow: hidden;
+}
+
+.totalShares {
+    text-align: center;
+}

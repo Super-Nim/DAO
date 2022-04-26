@@ -14,7 +14,11 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -165,8 +169,37 @@ export interface DAOInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "votes", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "contributed(address)": EventFragment;
+    "proposalCreated(uint256,string,uint256,address,uint256,uint256,bool)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "contributed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "proposalCreated"): EventFragment;
 }
+
+export interface contributedEventObject {
+  _investor: string;
+}
+export type contributedEvent = TypedEvent<[string], contributedEventObject>;
+
+export type contributedEventFilter = TypedEventFilter<contributedEvent>;
+
+export interface proposalCreatedEventObject {
+  _timestamp: BigNumber;
+  _name: string;
+  _amount: BigNumber;
+  _recipient: string;
+  _votes: BigNumber;
+  _endTime: BigNumber;
+  _executed: boolean;
+}
+export type proposalCreatedEvent = TypedEvent<
+  [BigNumber, string, BigNumber, string, BigNumber, BigNumber, boolean],
+  proposalCreatedEventObject
+>;
+
+export type proposalCreatedEventFilter = TypedEventFilter<proposalCreatedEvent>;
 
 export interface DAO extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -421,7 +454,29 @@ export interface DAO extends BaseContract {
     ): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    "contributed(address)"(_investor?: null): contributedEventFilter;
+    contributed(_investor?: null): contributedEventFilter;
+
+    "proposalCreated(uint256,string,uint256,address,uint256,uint256,bool)"(
+      _timestamp?: BigNumberish | null,
+      _name?: null,
+      _amount?: null,
+      _recipient?: string | null,
+      _votes?: null,
+      _endTime?: null,
+      _executed?: null
+    ): proposalCreatedEventFilter;
+    proposalCreated(
+      _timestamp?: BigNumberish | null,
+      _name?: null,
+      _amount?: null,
+      _recipient?: string | null,
+      _votes?: null,
+      _endTime?: null,
+      _executed?: null
+    ): proposalCreatedEventFilter;
+  };
 
   estimateGas: {
     admin(overrides?: CallOverrides): Promise<BigNumber>;

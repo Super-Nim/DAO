@@ -1,0 +1,61 @@
+.container {
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+.timer {
+    background-color: (0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer div:first-child {
+    text-align: center;
+}
+
+h2 {
+    font-weight:600;
+    margin-bottom: 0.5em;
+}
+
+.timer div:first-child p {
+    // color: #f8f8f8;
+}
+
+.timer div:last-child p {
+    border: 1px solid #fff;
+    border-radius: 3px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    // margin-top: 3em;
+    padding: 0.5em;
+    padding-bottom: 0;
+    text-align: center;
+    margin: 0;
+}
+
+.timer div:last-child {
+    border: 1px solid #fff;
+    border-radius: 3px;
+    display: grid;
+    align-items: baseline;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: 3em;
+    padding: 1em;
+    text-align: center;
+    margin-top: -10px;
+}
+
+section p:first-child, .timer div:last-child span {
+    font-size: 3em;
+}
+
+@media screen and (max-width: 480px) {
+    .timer div:last-child {
+        margin-left: 2em;
+        margin-right: 2em;
+        padding: 3em, 1em;
+    }
+}
