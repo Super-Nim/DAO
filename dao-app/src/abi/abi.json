@@ -39,6 +39,12 @@
       {
         "indexed": true,
         "internalType": "uint256",
+        "name": "_nextProposalId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
         "name": "_timestamp",
         "type": "uint256"
       },

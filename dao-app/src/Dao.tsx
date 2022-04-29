@@ -75,7 +75,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
     myShares = ethers.utils.formatEther(myShares);
     setTotalShares(totalShares);
     setMyShares(myShares);
-    if (myShares) {
+    if (myShares > 0) {
       setHasContributed(true);
     }
   }

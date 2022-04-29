@@ -13,7 +13,7 @@ pragma solidity ^0.8.0;
 contract DAO { 
 
     event contributed(address _investor);
-    event proposalCreated(uint indexed _timestamp, string _name, uint _amount, address indexed _recipient, uint _votes, uint _endTime, bool _executed);
+    event proposalCreated(uint indexed _nextProposalId, uint indexed _timestamp, string _name, uint _amount, address indexed _recipient, uint _votes, uint _endTime, bool _executed);
 
     struct Proposal {
         /// @notice unique id of proposal
@@ -112,8 +112,8 @@ contract DAO {
         // This reserved amount must be considered when other functions of the contract a called that deduct/add to the available funds
         // Therefore, the availableFunds will always be <= this.balance
         availableFunds -= amount;
+        emit proposalCreated(nextProposalId, block.timestamp, name, amount, recipient, 0, block.timestamp + voteTime, false);
         nextProposalId++;
-        emit proposalCreated(block.timestamp, name, amount, recipient, 0, block.timestamp + voteTime, false);
     }
     /// @notice vote for a given proposal
     function vote(uint proposalId) external onlyInvestors() {

@@ -171,7 +171,7 @@ export interface DAOInterface extends utils.Interface {
 
   events: {
     "contributed(address)": EventFragment;
-    "proposalCreated(uint256,string,uint256,address,uint256,uint256,bool)": EventFragment;
+    "proposalCreated(uint256,uint256,string,uint256,address,uint256,uint256,bool)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "contributed"): EventFragment;
@@ -186,6 +186,7 @@ export type contributedEvent = TypedEvent<[string], contributedEventObject>;
 export type contributedEventFilter = TypedEventFilter<contributedEvent>;
 
 export interface proposalCreatedEventObject {
+  _nextProposalId: BigNumber;
   _timestamp: BigNumber;
   _name: string;
   _amount: BigNumber;
@@ -195,7 +196,16 @@ export interface proposalCreatedEventObject {
   _executed: boolean;
 }
 export type proposalCreatedEvent = TypedEvent<
-  [BigNumber, string, BigNumber, string, BigNumber, BigNumber, boolean],
+  [
+    BigNumber,
+    BigNumber,
+    string,
+    BigNumber,
+    string,
+    BigNumber,
+    BigNumber,
+    boolean
+  ],
   proposalCreatedEventObject
 >;
 
@@ -458,7 +468,8 @@ export interface DAO extends BaseContract {
     "contributed(address)"(_investor?: null): contributedEventFilter;
     contributed(_investor?: null): contributedEventFilter;
 
-    "proposalCreated(uint256,string,uint256,address,uint256,uint256,bool)"(
+    "proposalCreated(uint256,uint256,string,uint256,address,uint256,uint256,bool)"(
+      _nextProposalId?: BigNumberish | null,
       _timestamp?: BigNumberish | null,
       _name?: null,
       _amount?: null,
@@ -468,6 +479,7 @@ export interface DAO extends BaseContract {
       _executed?: null
     ): proposalCreatedEventFilter;
     proposalCreated(
+      _nextProposalId?: BigNumberish | null,
       _timestamp?: BigNumberish | null,
       _name?: null,
       _amount?: null,
