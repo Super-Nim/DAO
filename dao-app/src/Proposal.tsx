@@ -2,7 +2,7 @@ import {
   isBigNumberish,
   BigNumberish,
 } from "@ethersproject/bignumber/lib/bignumber";
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography } from "@material-ui/core";
 import { Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import { ethers } from "ethers";
@@ -17,6 +17,7 @@ import {
   UseFormGetValues,
 } from "react-hook-form";
 import FormInputText from "./Reusable/FormInput";
+import ProposalCard from "./Reusable/ProposalCard";
 type ProposalInputProps = {
   contract: ethers.Contract;
 };
@@ -77,8 +78,10 @@ const Proposal = ({ contract }: ProposalInputProps) => {
           return prop;
         }
       });
+      setProposals(proposalStruct);
+    } 
     /// @dev fetches proposal by inputted id
-    } else {
+    else {
       const proposal = getValues("getProposal") as number;
       const txh: any[] = await contract.proposals(proposal);
       proposalStruct = txh.map((prop) => {
@@ -136,6 +139,7 @@ const Proposal = ({ contract }: ProposalInputProps) => {
     const init = async () => {
       console.log('useState: ', )
       listenToProposalCreated();
+      console.log('proposals length: ', proposals.length);
     };
     init();
 
@@ -145,7 +149,7 @@ const Proposal = ({ contract }: ProposalInputProps) => {
   }, [proposals]);
 
   return (
-    <section>
+    <Grid>
       <Stack sx={{ pt: 4 }} spacing={2} justifyContent="center">
         <FormInputText name="proposalName" control={control} label="name" />
         <FormInputText name="proposalAmount" control={control} label="amount" />
@@ -159,7 +163,15 @@ const Proposal = ({ contract }: ProposalInputProps) => {
           Get Proposal
         </Button>
       </Stack>
-    </section>
+      <Stack>
+        {proposals.length > 0 ?     
+          proposals.map((proposal: Proposal) => {
+          return <ProposalCard proposal={proposal}/>
+          })
+        : <></>}
+        
+      </Stack>
+    </Grid>
   );
 };
 
