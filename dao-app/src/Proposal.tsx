@@ -18,8 +18,10 @@ import {
 } from "react-hook-form";
 import FormInputText from "./Reusable/FormInput";
 import ProposalCard from "./Reusable/ProposalCard";
+import { arrayBuffer } from "stream/consumers";
 type ProposalInputProps = {
   contract: ethers.Contract;
+  walletAddress: string;
 };
 
 export interface Proposal {
@@ -32,15 +34,28 @@ export interface Proposal {
   executed: boolean;
 }
 
+export interface newProposal {
+  id: number;
+  name: string;
+  amount: number;
+  recipient: number;
+  votes: number;
+  endTime: number;
+  executed: boolean;
+
+}
+
 // pass Proposal types to re-usable comp
 export interface ProposalEvent extends Proposal {
   timestamp?: BigNumberish;
 }
 
-const Proposal = ({ contract }: ProposalInputProps) => {
+const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
   const methods = useForm();
   const { control, getValues } = methods;
-  const [ proposals, setProposals ] = useState<Proposal[]>([{
+
+  /// @dev newly created proposals are set here
+  const [newProposal, setNewProposal] = useState<any>({
     id: 0,
     name: '',
     amount: 0,
@@ -48,7 +63,9 @@ const Proposal = ({ contract }: ProposalInputProps) => {
     votes: 0,
     endTime: 0,
     executed: false
-  }]);
+  })
+  /// @dev newly created proposals get pushed here and passed to proposalCard
+  const [ proposals, setProposals ] = useState<any[]>([]);
 
   const createProposal = async () => {
     const name = getValues("proposalName");
@@ -70,15 +87,29 @@ const Proposal = ({ contract }: ProposalInputProps) => {
     let proposalStruct: Proposal[];
     /// @dev fetches proposal on creation
     if (id) {
-      const proposal = await contract.proposals(id);
-      proposalStruct = proposal.map((prop: any) => {
+      const fetchedProposal = await contract.proposals(id);
+      // console.log('proposal from contract ', proposal)
+
+      // need to loop through and add each prop to newProposal object
+      proposalStruct = fetchedProposal.map((prop: any) => {
         if (isBigNumberish(prop)) {
           return prop.toString();
         } else {
           return prop;
         }
       });
-      setProposals(proposalStruct);
+      const proposals = [];
+      for(let i = 0; i < id; i++) {
+        const [proposal, hasVoted] = await Promise.all([
+          contract.proposals(i),
+          contract.votes(walletAddress, i)
+        ]);
+        proposals.push({...proposal, hasVoted});
+      }
+      setProposals(proposals);
+      console.log('proposals arr ', proposals);
+
+
     } 
     /// @dev fetches proposal by inputted id
     else {
@@ -137,7 +168,6 @@ const Proposal = ({ contract }: ProposalInputProps) => {
 
   useEffect(() => {
     const init = async () => {
-      console.log('useState: ', )
       listenToProposalCreated();
       console.log('proposals length: ', proposals.length);
     };
@@ -149,7 +179,10 @@ const Proposal = ({ contract }: ProposalInputProps) => {
   }, [proposals]);
 
   return (
-    <Grid>
+    <Grid
+      container
+      spacing={1}
+    >
       <Stack sx={{ pt: 4 }} spacing={2} justifyContent="center">
         <FormInputText name="proposalName" control={control} label="name" />
         <FormInputText name="proposalAmount" control={control} label="amount" />
@@ -163,14 +196,12 @@ const Proposal = ({ contract }: ProposalInputProps) => {
           Get Proposal
         </Button>
       </Stack>
-      <Stack>
         {proposals.length > 0 ?     
           proposals.map((proposal: Proposal) => {
           return <ProposalCard proposal={proposal}/>
           })
         : <></>}
         
-      </Stack>
     </Grid>
   );
 };

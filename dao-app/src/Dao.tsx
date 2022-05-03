@@ -137,8 +137,8 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
   }, [totalShares]);
 
   return (
-    <>
-      <CssBaseline />
+    <Grid>
+      <CssBaseline/>
       <AppBar position="relative">
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
@@ -190,6 +190,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
             <Grid
               container
               columnGap={6}
+              wrap={"nowrap"}
               >
             <Stack
               sx={{ pt: 4 }}
@@ -207,7 +208,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
               <FormInputText name='to' control={control} label='to' />
               <Button variant="outlined" onClick={() => transfer()}>Transfer Shares</Button>
             </Stack>
-            <Proposal contract={contract} /> 
+            <Proposal contract={contract} walletAddress={walletAddress} /> 
             </Grid>
           </Container>
         </Box>
@@ -250,6 +251,6 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
           contributed
         </Typography>
       </Box>
-    </>
+    </Grid>
   );
 }
