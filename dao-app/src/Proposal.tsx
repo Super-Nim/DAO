@@ -17,7 +17,6 @@ import {
   UseFormGetValues,
 } from "react-hook-form";
 import FormInputText from "./Reusable/FormInput";
-import ProposalCard from "./Reusable/ProposalCard";
 import { arrayBuffer } from "stream/consumers";
 type ProposalInputProps = {
   contract: ethers.Contract;
@@ -84,22 +83,25 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
   };
 
   const getProposal = async (id?: number) => {
-    let proposalStruct: Proposal[];
+    let proposalStruct: Proposal[] | undefined;
     /// @dev fetches proposal on creation
     if (id) {
-      const fetchedProposal = await contract.proposals(id);
-      // console.log('proposal from contract ', proposal)
+      // const fetchedProposal = await contract.proposals(id);
+      // // console.log('proposal from contract ', proposal)
 
-      // need to loop through and add each prop to newProposal object
-      proposalStruct = fetchedProposal.map((prop: any) => {
-        if (isBigNumberish(prop)) {
-          return prop.toString();
-        } else {
-          return prop;
-        }
-      });
+      // // need to loop through and add each prop to newProposal object
+      // proposalStruct = fetchedProposal.map((prop: any) => {
+      //   if (isBigNumberish(prop)) {
+      //     return prop.toString();
+      //   } else {
+      //     return prop;
+      //   }
+      // });
+      const nextProposalId = await contract.nextProposalId();
       const proposals = [];
-      for(let i = 0; i < id; i++) {
+      /// @notice update proposals array with every proposal
+      for(let i = 0; i < nextProposalId; i++) {
+        console.log('let i =', i);
         const [proposal, hasVoted] = await Promise.all([
           contract.proposals(i),
           contract.votes(walletAddress, i)
@@ -178,7 +180,9 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
     };
   }, [proposals]);
 
-  return (
+  return {
+    proposals,
+    render:(
     <Grid
       container
       spacing={1}
@@ -196,14 +200,8 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
           Get Proposal
         </Button>
       </Stack>
-        {proposals.length > 0 ?     
-          proposals.map((proposal: Proposal) => {
-          return <ProposalCard proposal={proposal}/>
-          })
-        : <></>}
-        
     </Grid>
-  );
+  )};
 };
 
 export default Proposal;

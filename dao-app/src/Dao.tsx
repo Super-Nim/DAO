@@ -26,6 +26,7 @@ import { ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import Moment from 'react-moment';
 import moment from 'moment';
+import ProposalCard from "./Reusable/ProposalCard";
 
 type DaoInputProps = {
   contract: ethers.Contract;
@@ -56,9 +57,10 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
   const [blockTimestamp, setBlockTimestamp] = useState(0);
   const [futureDate, setFutureDate] = useState(0);
 
-  const getTotalShares = async () => {
-    return await contract.totalShares();
-  }
+  /// @notice Proposal child passes Proposals back to Dao, then to ProposalTable
+  const {render, proposals} = Proposal({contract, walletAddress});
+
+ 
 
   const {
     enableWeb3,
@@ -129,12 +131,18 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
       setBlockTimestamp(timeStampTime);
       setFutureDate(futureTime);
 
+
     }
     init();
     return () => {
       contract.removeAllListeners();
     }
   }, [totalShares]);
+
+
+  useEffect(() => {
+    console.log('PROPOSALS ARRAY FROM CHILD: ', proposals);
+  }, [proposals])
 
   return (
     <Grid>
@@ -208,7 +216,8 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
               <FormInputText name='to' control={control} label='to' />
               <Button variant="outlined" onClick={() => transfer()}>Transfer Shares</Button>
             </Stack>
-            <Proposal contract={contract} walletAddress={walletAddress} /> 
+            {/*Child Proposal.tsx passes proposals back to parent */}
+            {render}   
             </Grid>
           </Container>
         </Box>
@@ -219,25 +228,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
            *
            */}
           <Grid container spacing={4}>
-            <div style={fillSpace}></div>
-            {/* {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
-                <Card style={cardStyle}>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Governance Token
-                    </Typography>
-                    <Typography>
-                      Proposal info...
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))} */}
+            {proposals.length > 0 ? <ProposalCard proposals={proposals}/> : <></>}
           </Grid>
         </Container>
       </main>
