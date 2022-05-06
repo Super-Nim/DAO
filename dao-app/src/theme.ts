@@ -14,6 +14,11 @@ const theme = createTheme({
       root: {
         width: '20vw',
       }
+    },
+    MuiTableCell: {
+      root: {
+        textAlign: 'center'
+      }
     }
   },
   

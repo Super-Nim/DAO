@@ -59,6 +59,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
 
   /// @notice Proposal child passes Proposals back to Dao, then to ProposalTable
   const {render, proposals} = Proposal({contract, walletAddress});
+  const [ allProposals, setAllProposals ] = useState<typeof Proposal[]>([]);
 
  
 
@@ -221,15 +222,13 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
             </Grid>
           </Container>
         </Box>
-        <Container maxWidth="md">
+        <Container maxWidth="xl">
           {/** Content body
            * before 10 minutes are up, this will display a countdown component
            * investors create proposals, cards output each proposal
            *
            */}
-          <Grid container spacing={4}>
-            {proposals.length > 0 ? <ProposalCard proposals={proposals}/> : <></>}
-          </Grid>
+            {proposals.length > 0 ? <ProposalCard contract={contract} proposals={proposals} walletAddress={walletAddress}/> : <></>}
         </Container>
       </main>
       {/* Footer */}

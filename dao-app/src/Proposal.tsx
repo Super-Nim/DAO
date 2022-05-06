@@ -31,6 +31,7 @@ export interface Proposal {
   votes: BigNumberish;
   endTime: BigNumberish;
   executed: boolean;
+  hasVoted?: boolean;
 }
 
 export interface newProposal {
@@ -54,17 +55,17 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
   const { control, getValues } = methods;
 
   /// @dev newly created proposals are set here
-  const [newProposal, setNewProposal] = useState<any>({
-    id: 0,
-    name: '',
-    amount: 0,
-    recipient: 0,
-    votes: 0,
-    endTime: 0,
-    executed: false
-  })
+  // const [newProposal, setNewProposal] = useState<any>({
+  //   id: 0,
+  //   name: '',
+  //   amount: 0,
+  //   recipient: 0,
+  //   votes: 0,
+  //   endTime: 0,
+  //   executed: false
+  // })
   /// @dev newly created proposals get pushed here and passed to proposalCard
-  const [ proposals, setProposals ] = useState<any[]>([]);
+  const [ proposals, setProposals ] = useState<Proposal[]>([]);
 
   const createProposal = async () => {
     const name = getValues("proposalName");
