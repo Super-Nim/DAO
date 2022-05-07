@@ -2,6 +2,13 @@
 
 A Decentralised Autonomous Organisation built with React and Hardhat/Ethers.js.
 
+```
+cd /hardhat
+npm i
+npx hardhat node
+
+```
+
 ## Project Aim
 
 To understand the fundamentals of a DAO. Create contract calls that automatically update the DAO's state and UI. 
