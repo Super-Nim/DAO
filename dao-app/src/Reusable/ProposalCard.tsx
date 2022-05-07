@@ -96,8 +96,7 @@ const ProposalCard = ({contract, proposals, walletAddress, key}: IProposalTableP
 
   useEffect(() => {
     const init = async () => {
-      const admin = await contract.admin;
-      admin.toString();
+      const admin = await contract.admin() as string;
       setAdmin(admin);
     }
     init()

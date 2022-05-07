@@ -58,8 +58,8 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
   const [futureDate, setFutureDate] = useState(0);
 
   /// @notice Proposal child passes Proposals back to Dao, then to ProposalTable
-  const {render, proposals} = Proposal({contract, walletAddress});
-  const [ allProposals, setAllProposals ] = useState<typeof Proposal[]>([]);
+  const {render, proposals, getProposal} = Proposal({contract, walletAddress});
+  // const [ allProposals, setAllProposals ] = useState<typeof Proposal[]>([]);
 
  
 
@@ -132,6 +132,9 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
       setBlockTimestamp(timeStampTime);
       setFutureDate(futureTime);
 
+      const nextProposalId = await contract.nextProposalId() as number;
+      console.log('nextProposalId: ', nextProposalId);
+      getProposal(nextProposalId);
 
     }
     init();

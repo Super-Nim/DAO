@@ -99,7 +99,7 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
       //   }
       // });
       const nextProposalId = await contract.nextProposalId();
-      const proposals = [];
+      const proposals: Proposal[] = [];
       /// @notice update proposals array with every proposal
       for(let i = 0; i < nextProposalId; i++) {
         console.log('let i =', i);
@@ -110,7 +110,7 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
         proposals.push({...proposal, hasVoted});
       }
       setProposals(proposals);
-      console.log('proposals arr ', proposals);
+      return proposals;
 
 
     } 
@@ -183,6 +183,7 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
 
   return {
     proposals,
+    getProposal,
     render:(
     <Grid
       container
