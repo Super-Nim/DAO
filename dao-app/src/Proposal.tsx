@@ -53,18 +53,6 @@ export interface ProposalEvent extends Proposal {
 const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
   const methods = useForm();
   const { control, getValues } = methods;
-
-  /// @dev newly created proposals are set here
-  // const [newProposal, setNewProposal] = useState<any>({
-  //   id: 0,
-  //   name: '',
-  //   amount: 0,
-  //   recipient: 0,
-  //   votes: 0,
-  //   endTime: 0,
-  //   executed: false
-  // })
-  /// @dev newly created proposals get pushed here and passed to proposalCard
   const [ proposals, setProposals ] = useState<Proposal[]>([]);
 
   const createProposal = async () => {
@@ -87,17 +75,6 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
     let proposalStruct: Proposal[] | undefined;
     /// @dev fetches proposal on creation
     if (id) {
-      // const fetchedProposal = await contract.proposals(id);
-      // // console.log('proposal from contract ', proposal)
-
-      // // need to loop through and add each prop to newProposal object
-      // proposalStruct = fetchedProposal.map((prop: any) => {
-      //   if (isBigNumberish(prop)) {
-      //     return prop.toString();
-      //   } else {
-      //     return prop;
-      //   }
-      // });
       const nextProposalId = await contract.nextProposalId();
       const proposals: Proposal[] = [];
       /// @notice update proposals array with every proposal
@@ -126,12 +103,6 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
         }
       });  
     }
-    // TODO: getendTime of proposal, pass to ProposalCard.tsx
-    // let time = new Date(proposalStruct[5].toString());
-    // let normalDate = new Date(proposalStruct[5].toString()).toLocaleString(
-    //   "en-GB",
-    //   { timeZone: "UTC" }
-    // );
     console.log('getProposal ', proposalStruct);
     return proposalStruct;
   };
@@ -152,13 +123,7 @@ const Proposal = ({ contract, walletAddress }: ProposalInputProps) => {
         executed,
       }) => {
         console.log("proposalCreated: ", id, timestamp, name, recipient);
-        // const filterFromMe = contract.filters.proposalCreated(id, timestamp);
 
-        //TODO: add filters to contract to get specific event...
-        // contract.filters
-        // make this a new func
-        // const proposal = await getProposal(id as number);
-        // setProposals(proposal);
         const date = moment
           .unix(timestamp as number)
           .format("MMMM D, Y hh:mm:ss");

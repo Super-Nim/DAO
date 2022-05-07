@@ -26,7 +26,7 @@ import { ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import Moment from 'react-moment';
 import moment from 'moment';
-import ProposalCard from "./Reusable/ProposalCard";
+import ProposalTable from "./Reusable/ProposalTable";
 
 type DaoInputProps = {
   contract: ethers.Contract;
@@ -35,16 +35,8 @@ type DaoInputProps = {
   walletAddress: string;
 };
 
-const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 const connectWallet = {
   marginLeft: "auto",
-};
-
-const fillSpace = {
-  height: "45vh",
 };
 
 export default function DAO({ contract, signer, hasMetamask, walletAddress }: DaoInputProps) {
@@ -59,9 +51,6 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
 
   /// @notice Proposal child passes Proposals back to Dao, then to ProposalTable
   const {render, proposals, getProposal} = Proposal({contract, walletAddress});
-  // const [ allProposals, setAllProposals ] = useState<typeof Proposal[]>([]);
-
- 
 
   const {
     enableWeb3,
@@ -84,7 +73,6 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
   }
 
   const listenToContributed = () => {
-    // const connection = new ethers.providers.WebSocketProvider('http://127.0.0.1:8545/');
 
     contract.on('contributed', (address) => {
       if (address === walletAddress) {
@@ -114,7 +102,6 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
   }
 
 
-  // TODO: add event listener in contract to re-render component on changes
   useEffect(() => {
     const init = async () => {
       const provider = new ethers.providers.JsonRpcProvider();
@@ -193,7 +180,6 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
             </Typography>
             <Typography variant="h5" align="center" paragraph>
               <Stack>
-                <Timer futureDate={futureDate} blockTimestamp={blockTimestamp}/>
               </Stack>
             </Typography>
             <h1 className="totalShares">DAO's Shares: {totalShares} Eth</h1>
@@ -203,6 +189,10 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
               container
               columnGap={6}
               wrap={"nowrap"}
+              sx={{
+                display:'flex',
+                justifyContent: 'center'
+              }} 
               >
             <Stack
               sx={{ pt: 4 }}
@@ -226,12 +216,7 @@ export default function DAO({ contract, signer, hasMetamask, walletAddress }: Da
           </Container>
         </Box>
         <Container maxWidth="xl">
-          {/** Content body
-           * before 10 minutes are up, this will display a countdown component
-           * investors create proposals, cards output each proposal
-           *
-           */}
-            {proposals.length > 0 ? <ProposalCard contract={contract} proposals={proposals} walletAddress={walletAddress}/> : <></>}
+            {proposals.length > 0 ? <ProposalTable contract={contract} proposals={proposals} walletAddress={walletAddress}/> : <></>}
         </Container>
       </main>
       {/* Footer */}

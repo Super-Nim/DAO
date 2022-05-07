@@ -1,11 +1,10 @@
 // TODO: receives created proposal from Proposal.tsx, outputs individually
 
-import { Avatar, Button, Card, CardActions, CardContent, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Typography } from "@material-ui/core";
+import { Avatar, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Typography } from "@material-ui/core";
 import { ethers } from "moralis/node_modules/ethers";
 import React, { useEffect, useState } from "react";
 import { Proposal } from "../Proposal";
-import '../scss/ProposalCard.scss';
-import MatTable from './Table';
+import '../scss/ProposalTable.scss';
 
 // use npm react-countdown for 1 hours timer for each proposal
 // Might need to use ProposalEvent[] to apply timer from timestamp
@@ -16,81 +15,24 @@ interface IProposalTableProps {
   key?: any;
 }
 
-const ProposalCard = ({contract, proposals, walletAddress, key}: IProposalTableProps) => {
-  // useEffect(() => {
-  //   proposals.map
-
-  // },[proposal]);
-  const data = proposals;
+const ProposalTable = ({contract, proposals, walletAddress, key}: IProposalTableProps) => {
   const [admin, setAdmin] = useState('');
 
-  const columns = [
-    { title: 'ID', field: 'id'},
-    { title: 'Name', field: 'name'},
-    { title: 'Amount', field: 'amount'},
-    { title: 'Recipient', field: 'recipient'},
-    { title: 'Votes', field: 'votes'},
-    { title: 'End Time', field: 'end'},
-    { title: 'Executed', field: 'executed'}
-  ]
+  const vote = async (proposalId: number) => {
+    console.log('proposalId vote called ', proposalId);
+    await contract.vote(proposalId);
+    const proposal = await contract.proposals(proposalId);
+    console.log('total votes from proposal: ', proposal.votes.toString());
+  }
 
-  const containerStyle = {
-    height: '79.5vh'
-  };
-
-  const tableStyle = {
-    height: '79.5vh'
-  };
-
-  async function vote(ballotId: number) {
-    await contract.vote(ballotId);
-  };
-
-  async function executeProposal(proposalId: number) {
+  const executeProposal = async (proposalId: number) => {
     await contract.executeProposal(proposalId);
   };
 
-  // TODO: replace with scss classes
-  // const useStyles = makeStyles((theme) => ({
-  //   table: {
-  //     width: '1500px',
-  //   },
-  //   tableContainer: {
-  //       borderRadius: 15,
-  //       margin: '10px 10px',
-  //       width: '1500px'
-  //   },
-  //   tableHeaderCell: {
-  //       // fontWeight: 'bold',
-  //       // backgroundColor: theme.palette.primary.dark,
-  //       // color: theme.palette.getContrastText(theme.palette.primary.dark),
-  //       // textAlign: 'center'
-  //   },
-  //   avatar: {
-  //       backgroundColor: theme.palette.primary.light,
-  //       color: theme.palette.getContrastText(theme.palette.primary.light)
-  //   },
-  //   name: {
-  //       fontWeight: 'bold',
-  //       color: theme.palette.secondary.dark
-  //   },
-  //   status: {
-  //       fontWeight: 'bold',
-  //       fontSize: '0.75rem',
-  //       color: 'white',
-  //       backgroundColor: 'grey',
-  //       borderRadius: 8,
-  //       padding: '3px 10px',
-  //       display: 'inline-block'
-  //   }
-  // }));
-
-  // const classes = useStyles();
-
   function isFinished(proposal: Proposal) {
     const now = new Date().getTime();
-    const endTime = proposal.endTime.toString();
-    const proposalEnd =  new Date(parseInt(endTime) * 1000).getTime();
+    // const endTime = proposal.endTime.toString();
+    const proposalEnd =  new Date(parseInt(proposal.endTime.toString()) * 1000).getTime();
     return (proposalEnd > now) ? false : true;
   }
 
@@ -139,22 +81,22 @@ const ProposalCard = ({contract, proposals, walletAddress, key}: IProposalTableP
               <TableCell>{proposal.recipient.toString()}</TableCell>
               <TableCell>
                   <Typography 
-                  >{proposal.votes.toString()}</Typography>
+                  >{ethers.utils.formatEther(proposal.votes)}</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography 
-                  >{proposal.endTime.toString()}</Typography>
+                  >{(new Date(parseInt(proposal.endTime.toString()) * 1000)).toLocaleString()}</Typography>
                 </TableCell>
                 <TableCell>
                   {proposal.executed ? 'Yes' : (
-                    admin.toLowerCase() === walletAddress.toLowerCase() ? 
-                    <Button variant="contained" onClick={() => executeProposal(proposal.id)}></Button>
+                    admin.toLowerCase() !== walletAddress.toLowerCase() ? 
+                    <Button variant="contained" onClick={() => executeProposal(proposal.id.toNumber())}>Execute</Button>
                    : 'No')}
                 </TableCell>
                 <TableCell>
                   {isFinished(proposal) ? <Typography>Vote finished</Typography> : (
                     proposal?.hasVoted ? <Typography>Already voted</Typography> : (
-                      <Button variant="contained">Vote</Button>
+                      <Button variant="contained" onClick={() => vote(proposal.id.toNumber())}>Vote</Button>
                     )) }
                 </TableCell>
             </TableRow>
@@ -169,4 +111,4 @@ const ProposalCard = ({contract, proposals, walletAddress, key}: IProposalTableP
       )
 }
 
-export default ProposalCard;
+export default ProposalTable;

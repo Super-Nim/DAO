@@ -116,6 +116,7 @@ contract DAO {
         nextProposalId++;
     }
     /// @notice vote for a given proposal
+    /// votes are weighted proportionally to the shares of the voter
     function vote(uint proposalId) external onlyInvestors() {
         /// @dev create storage pointer to update proposal more easily
         Proposal storage proposal = proposals[proposalId];
