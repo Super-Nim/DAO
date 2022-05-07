@@ -2,11 +2,17 @@
 
 A Decentralised Autonomous Organisation built with React and Hardhat/Ethers.js.
 
+To get started:
+
 ```
-cd /hardhat
+cd hardhat/
 npm i
 npx hardhat node
-
+```
+```
+cd dao-app/
+npm i
+npm start
 ```
 
 ## Project Aim
